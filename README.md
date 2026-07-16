@@ -5,7 +5,7 @@ Find ISRCs of the 20 most recent releases from any specific artist on Spotify.
 Features
 
 - Fetches artist data from a Spotify artist link
-- Lists the 20 most recent releases (albums + singles)
+- Lists the 30 most recent releases (albums + singles)
 - Extracts the ISRC of every track from each release
 - Generates an organized output.txt file
 
