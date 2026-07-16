@@ -1,8 +1,8 @@
 import requests
 import re
 
-CLIENT_ID = "YOUR_ID"
-CLIENT_SECRET = "YOUR_SECRETCODE"
+CLIENT_ID = "your_id"
+CLIENT_SECRET = "your_secret"
 
 TOKEN_URL = "https://accounts.spotify.com/api/token"
 API = "https://api.spotify.com/v1"
@@ -68,7 +68,7 @@ def get_last_three_albums(artist_id, token):
 
     albums = []
     offset = 0
-    limit = 10  # a API da Spotify agora limita esse endpoint a no máximo 10 por página
+    limit = 10
 
     while True:
 
@@ -100,37 +100,50 @@ def get_last_three_albums(artist_id, token):
         reverse=True
     )
 
-    return albums[:20]
+    return albums[:30]
 
 def get_tracks(album_id, token):
 
-    data = spotify_get(
-        f"/albums/{album_id}/tracks",
-        token
-    )
-
     tracks = []
+    offset = 0
+    limit = 50
 
-    for track in data["items"]:
+    while True:
 
-        details = spotify_get(
-            f"/tracks/{track['id']}",
-            token
+        data = spotify_get(
+            f"/albums/{album_id}/tracks",
+            token,
+            {
+                "limit": limit,
+                "offset": offset
+            }
         )
 
-        isrc = details.get(
-            "external_ids",
-            {}
-        ).get(
-            "isrc",
-            "NÃO ENCONTRADO"
-        )
+        for track in data["items"]:
 
-        tracks.append({
-            "number": track["track_number"],
-            "name": track["name"],
-            "isrc": isrc
-        })
+            details = spotify_get(
+                f"/tracks/{track['id']}",
+                token
+            )
+
+            isrc = details.get(
+                "external_ids",
+                {}
+            ).get(
+                "isrc",
+                "NÃO ENCONTRADO"
+            )
+
+            tracks.append({
+                "number": track["track_number"],
+                "name": track["name"],
+                "isrc": isrc
+            })
+
+        if data.get("next") is None:
+            break
+
+        offset += limit
 
     return tracks
 
